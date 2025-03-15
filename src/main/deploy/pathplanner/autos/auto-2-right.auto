@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "start-path-right"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "score_level_1"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 10.0
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 10.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "spr-to-feeder"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "feeder-to-score-r"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": false,
+  "folder": "Auto Right",
+  "choreoAuto": false
+}
