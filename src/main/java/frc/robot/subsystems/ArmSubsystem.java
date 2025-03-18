@@ -15,7 +15,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Configs;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
@@ -38,12 +40,12 @@ public class ArmSubsystem extends SubsystemBase {
         intake_motor_2 = new SparkMax(31, MotorType.kBrushless);
         arm_ClosedLoopController = arm_motor.getClosedLoopController();
 
-        arm_motor.configure(Configs.Arm.armConfig,ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        arm_motor.configure(Configs.Arm.armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         arm_encoder = arm_motor.getAbsoluteEncoder();
     };
 
     public boolean hasGamePiece() {
-        double current=  (intake_motor_1.getOutputCurrent()  + intake_motor_2.getOutputCurrent()) / 2 ;
+        double current = (intake_motor_1.getOutputCurrent() + intake_motor_2.getOutputCurrent()) / 2;
         SmartDashboard.putNumber("ArmSubsystem/IntakeCurrent", current);
         return current >= ArmConstants.kMaxCurrentIntake;
     }
@@ -54,14 +56,13 @@ public class ArmSubsystem extends SubsystemBase {
 
     public Command getSetArmPositionCommand(double input) {
         return Commands.runOnce(() -> setTarget(input))
-        .until(() -> this.atTarget());
+                .until(() -> this.atTarget());
     }
 
     public Command getCollectGamePieceCommand() {
         return Commands.sequence(
-            getSetArmPositionCommand(ArmConstants.kPositionCollect),
-            Commands.runOnce(() -> this.intake()).until(() -> hasGamePiece())
-            );
+                getSetArmPositionCommand(ArmConstants.kPositionCollect),
+                Commands.runOnce(() -> this.intake()).until(() -> hasGamePiece()));
     }
 
     public double geCurrentPositon() {
@@ -74,12 +75,12 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void intake() {
-        intake_motor_1.set(-1* 0.3);
+        intake_motor_1.set(-1 * 0.3);
         intake_motor_2.set(0.3);
     }
 
     public void spitOut() {
-        intake_motor_2.set(-1* 0.25);
+        intake_motor_2.set(-1 * 0.25);
         intake_motor_1.set(0.25);
     }
 
@@ -93,7 +94,6 @@ public class ArmSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("ArmSubsytem/speed", s);
     };
 
-
     public void increment() {
         targetPosition++;
     };
@@ -102,10 +102,14 @@ public class ArmSubsystem extends SubsystemBase {
         targetPosition--;
     }
 
+    public Command getReleaseCommand() {
+        return Commands.sequence(Commands.runOnce(() -> spitOut(), this), new WaitCommand(2), Commands.runOnce(() -> stopIntake()));
+    }
+
     @Override
     public void periodic() {
         currentPosition = arm_encoder.getPosition();
-        
+
         double error = targetPosition - currentPosition;
         SmartDashboard.putBoolean("ArmSubsystem/Ready", atTarget());
         SmartDashboard.putNumber("ArmSubsystem/TargetPosition", targetPosition);
@@ -113,25 +117,27 @@ public class ArmSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("ArmSubsystem/Error", error);
         SmartDashboard.putBoolean("ArmSubsystem/Has_Coral", hasGamePiece());
 
-        if(RobotContainer.m_SysController.getLeftTriggerAxis() > 0 ) {
+        if (RobotContainer.m_SysController.getLeftTriggerAxis() > 0) {
             intake();
-          }else if(RobotContainer.m_SysController.getRightTriggerAxis() == 0) {
+        } else if (RobotContainer.m_SysController.getRightTriggerAxis() == 0) {
             stopIntake();
-          }
-      
-          if(RobotContainer.m_SysController.getRightTriggerAxis() > 0) {
+        }
+
+        if (RobotContainer.m_SysController.getRightTriggerAxis() > 0) {
             spitOut();
-          }
-        // arm_ClosedLoopController.setReference(Rotation2d.fromDegrees(targetPosition).getRadians(), ControlType.kPosition);
-        
+        }
+        // arm_ClosedLoopController.setReference(Rotation2d.fromDegrees(targetPosition).getRadians(),
+        // ControlType.kPosition);
+
         // if(!atTarget()) {
-        //     currentPosition += MathUtil.clamp(error / 100, -0.8, 0.8);
+        // currentPosition += MathUtil.clamp(error / 100, -0.8, 0.8);
         // }
         // arm_ClosedLoopController.setReference(targetPosition, ControlType.kPosition);
 
         // double pos = arm_encoder.getPosition(); //double means float
 
-        // double speed = MathUtil.clamp(pid.calculate(pos, targetPosition), -0.15, 0.15);
+        // double speed = MathUtil.clamp(pid.calculate(pos, targetPosition), -0.15,
+        // 0.15);
 
         // SmartDashboard.putNumber("[ARM POSITION]", pos);
 

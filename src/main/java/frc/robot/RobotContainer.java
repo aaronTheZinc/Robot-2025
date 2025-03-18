@@ -18,6 +18,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.vision.PoseEstimator;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -26,6 +27,7 @@ import com.pathplanner.lib.auto.*;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
+
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -36,7 +38,7 @@ public class RobotContainer {
   // The robot's subsystems
   public static final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
-  public static final ArmSubsystem  m_arm = new ArmSubsystem();
+  public static final ArmSubsystem m_arm = new ArmSubsystem();
   public static final PoseEstimator pose_estimator = new PoseEstimator();
   private final AutoController a_auto = new AutoController(m_robotDrive, () -> pose_estimator.getEstimatedPose2D());
   private final ScoreCommand g_score = new ScoreCommand(m_elevator, m_arm);
@@ -45,28 +47,31 @@ public class RobotContainer {
   public static XboxController m_SysController = new XboxController(OIConstants.kSystemControllerPort);
 
   public void Intake() {
-  
+
   }
 
   public void scheduleIntakeCommand() {
     // new RunCommand(() -> Intake(), m_arm).schedule();
   }
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-  
+
     a_auto.loadAutos();
     a_auto.registerCommands(g_score);
 
-    // m_elevator.setDefaultCommand(new RunCommand(() -> m_elevator.set(m_SysController.getLeftY()), m_elevator));
+    // m_elevator.setDefaultCommand(new RunCommand(() ->
+    // m_elevator.set(m_SysController.getLeftY()), m_elevator));
     // m_arm.setDefaultCommand(new RunCommand(() -> Intake(), m_arm));
-    // m_arm.setDefaultCommand(new RunCommand(() -> m_arm.set(m_driverController.getRightY()), m_arm));
-    
+    // m_arm.setDefaultCommand(new RunCommand(() ->
+    // m_arm.set(m_driverController.getRightY()), m_arm));
+
     // Configure default commands
-    m_robotDrive.setDefaultCommand( //default command similar to a loop system
+    m_robotDrive.setDefaultCommand( // default command similar to a loop system
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
@@ -96,7 +101,9 @@ public class RobotContainer {
     new JoystickButton(m_driverController, XboxController.Button.kY.value).onTrue(new InstantCommand(() -> m_elevator.increment(), m_elevator));
     new JoystickButton(m_driverController, XboxController.Button.kA.value).onTrue(new InstantCommand(() -> m_elevator.decrement(), m_elevator));
 
-   
+
+    //Release Command moves arm down & Spits out coral 
+    new Trigger(() -> m_SysController.getLeftBumperButtonPressed()).onTrue(g_score.getReleaseCommand());
 
     new JoystickButton(m_SysController, XboxController.Button.kY.value)
     .onTrue(g_score.getScoreCommand(ElevatorArmProfiles.kLevel1, "L1"));
@@ -122,15 +129,15 @@ public class RobotContainer {
 
   public Command followPath() {
     try {
-      Pose2d startingPose2d = new Pose2d( 7.456,3.953, Rotation2d.fromDegrees(0));
+      Pose2d startingPose2d = new Pose2d(7.456, 3.953, Rotation2d.fromDegrees(0));
       PathPlannerPath centerPath = PathPlannerPath.fromPathFile("center-score");
       m_robotDrive.resetOdometry(startingPose2d);
       return Commands.sequence(AutoBuilder.followPath(centerPath));
-     } catch (Exception e) {
-        DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-        return Commands.none();
+    } catch (Exception e) {
+      DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+      return Commands.none();
     }
-    
+
   }
 
   /**
