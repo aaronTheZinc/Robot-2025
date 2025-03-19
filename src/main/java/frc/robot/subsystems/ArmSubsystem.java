@@ -126,13 +126,13 @@ public class ArmSubsystem extends SubsystemBase {
         if (RobotContainer.m_SysController.getRightTriggerAxis() > 0) {
             spitOut();
         }
-        // arm_ClosedLoopController.setReference(Rotation2d.fromDegrees(targetPosition).getRadians(),
-        // ControlType.kPosition);
+         arm_ClosedLoopController.setReference(Rotation2d.fromDegrees(targetPosition).getRadians(),
+        ControlType.kPosition);
 
         // if(!atTarget()) {
         // currentPosition += MathUtil.clamp(error / 100, -0.8, 0.8);
         // }
-        // arm_ClosedLoopController.setReference(targetPosition, ControlType.kPosition);
+        //arm_ClosedLoopController.setReference(targetPosition, ControlType.kPosition);
 
         // double pos = arm_encoder.getPosition(); //double means float
 

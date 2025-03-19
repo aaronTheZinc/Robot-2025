@@ -103,7 +103,7 @@ public class RobotContainer {
 
 
     //Release Command moves arm down & Spits out coral 
-    new Trigger(() -> m_SysController.getLeftBumperButtonPressed()).onTrue(g_score.getReleaseCommand());
+    new Trigger(() -> m_SysController.getRightBumperButtonPressed()).onTrue(g_score.getReleaseCommand());
 
     new JoystickButton(m_SysController, XboxController.Button.kY.value)
     .onTrue(g_score.getScoreCommand(ElevatorArmProfiles.kLevel1, "L1"));
@@ -116,6 +116,16 @@ public class RobotContainer {
 
     new JoystickButton(m_SysController, XboxController.Button.kA.value)
     .onTrue(g_score.getScoreCommand(ElevatorArmProfiles.kLevel4, "L4"));
+
+    new JoystickButton(m_SysController, XboxController.Button.kLeftBumper.value)
+    .onTrue(g_score.getScoreCommand(ElevatorArmProfiles.kPositionCollect, "Rest"));
+
+    Trigger xButton = new Trigger(m_SysController::getXButton);
+    Trigger yButton = new Trigger(m_SysController::getYButton);
+
+    xButton.and(yButton)
+    .onTrue(g_score.getScoreCommand(ElevatorArmProfiles.kStore, "reset height"));
+    
 
     // new JoystickButton(., 0)
 

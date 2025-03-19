@@ -82,11 +82,12 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
-    public static final double kPositionCollect = -18.0;
+    public static final double kPositionCollect = -18;
     public static final double kLevel1 = -4.96;
     public static final double kLevel2 = -5.01;
     public static final double kLevel3 = -12.0;
     public static final double kLevel4 = -76;
+    public static final double kStore = -24;
 
     public static final double kMaxTargetOffset = 0.1;
     public static final double elevatorWinchDiameter = 1.65;
@@ -99,7 +100,7 @@ public final class Constants {
     public static final double kPositionCollect = 184;
     public static final double kMaxTargetOffset = 0.05;
 
-    public static final double kLevel1 = 89.0;
+    public static final double kLevel1 = 89;
     public static final double kLevel2 = 44.6;
     public static final double kLevel3 = 52.0;
     public static final double kLevel4 = 42.5;
@@ -134,6 +135,8 @@ public final class Constants {
         66);
     public static final ElevatorArmState kLevel4 = new ElevatorArmState(ElevatorConstants.kLevel4, ArmConstants.kLevel4,
         90);
+     public static final ElevatorArmState kStore = new ElevatorArmState(ElevatorConstants.kStore, ArmConstants.kPositionCollect,
+        ArmConstants.kPositionCollect);
 
   }
 
