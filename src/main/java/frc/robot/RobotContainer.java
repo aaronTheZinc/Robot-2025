@@ -110,6 +110,11 @@ public class RobotContainer {
     //Release Command moves arm down & Spits out coral 
     new Trigger(() -> m_SysController.getRightBumperButtonPressed()).onTrue(g_score.getReleaseCommand());
 
+    // new Trigger(() -> m_SysController.getRightBumperButtonPressed())
+    // .onTrue(new InstantCommand(() -> g_score.getReleaseCommand().schedule()));
+
+
+
     new JoystickButton(m_SysController, XboxController.Button.kY.value)
     .onTrue(g_score.getScoreCommand(ElevatorArmProfiles.kLevel1, "L1"));
 
