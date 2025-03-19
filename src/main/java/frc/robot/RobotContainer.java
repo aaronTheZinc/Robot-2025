@@ -7,8 +7,11 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ElevatorArmProfiles;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AutoController;
@@ -49,6 +52,8 @@ public class RobotContainer {
   public void Intake() {
 
   }
+
+
 
   public void scheduleIntakeCommand() {
     // new RunCommand(() -> Intake(), m_arm).schedule();
@@ -120,20 +125,13 @@ public class RobotContainer {
     new JoystickButton(m_SysController, XboxController.Button.kLeftBumper.value)
     .onTrue(g_score.getScoreCommand(ElevatorArmProfiles.kPositionCollect, "Rest"));
 
-    Trigger xButton = new Trigger(m_SysController::getXButton);
-    Trigger yButton = new Trigger(m_SysController::getYButton);
 
-    xButton.and(yButton)
+    //if this doesnt work use control command below this one
+    new JoystickButton(m_SysController, XboxController.Button.kStart.value)
     .onTrue(g_score.getScoreCommand(ElevatorArmProfiles.kStore, "reset height"));
-    
 
-    // new JoystickButton(., 0)
-
-    // new JoystickButton(m_driverController, XboxController.Button.kY.value)
-    // .onTrue(m_elevator.getSetElevatorPositionCommand(ElevatorConstsnts.kLevel5));
-
-    // new JoystickButton(m_driverController, XboxController.Button.kY.value)
-    // .onTrue(m_elevator.getSetElevatorPositionCommand(ElevatorConstsnts.kLevel6));
+    // new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
+    // .onTrue(g_score.getScoreCommand(ElevatorArmProfiles.kStore, "reset height"));
 
   }
 

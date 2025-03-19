@@ -85,7 +85,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     private Boolean atTarget() {
-        double error = targetPosition - currentPosition;
+        double error = targetPosition - Rotation2d.fromRadians(currentPosition).getDegrees();
         return Math.abs(error) < ArmConstants.kMaxTargetOffset;
     }
 
@@ -103,7 +103,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public Command getReleaseCommand() {
-        return Commands.sequence(Commands.runOnce(() -> spitOut(), this), new WaitCommand(2), Commands.runOnce(() -> stopIntake()));
+        return Commands.sequence(Commands.runOnce(() -> spitOut()), new WaitCommand(2), Commands.runOnce(() -> stopIntake()));
     }
 
     @Override

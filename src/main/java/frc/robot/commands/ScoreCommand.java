@@ -11,7 +11,7 @@ public class ScoreCommand extends Command {
     private final ElevatorSubsystem m_elevator;
     private final ArmSubsystem m_arm;
     public final ElevatorArmProfile m_effector;
-    private ElevatorArmState currentProfile = new ElevatorArmState(0, 0, 0);
+    private ElevatorArmState currentProfile = new ElevatorArmState(0, 0, 90);
 
     public ScoreCommand(ElevatorSubsystem elevator, ArmSubsystem arm) {
         this.m_arm = arm;
