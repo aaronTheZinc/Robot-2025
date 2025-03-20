@@ -31,6 +31,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final SparkClosedLoopController arm_ClosedLoopController;
     private double accum = 0;
     private double currentPosition;
+    private boolean lockIntakeCommand = false;
 
     private double targetPosition;
 
@@ -50,7 +51,8 @@ public class ArmSubsystem extends SubsystemBase {
         return current >= ArmConstants.kMaxCurrentIntake;
     }
 
-    private void setTarget(double input) {
+
+    public void setTarget(double input) {
         targetPosition = input;
     }
 
@@ -84,7 +86,7 @@ public class ArmSubsystem extends SubsystemBase {
         intake_motor_1.set(0.25);
     }
 
-    private Boolean atTarget() {
+    public Boolean atTarget() {
         double error = targetPosition - Rotation2d.fromRadians(currentPosition).getDegrees();
         return Math.abs(error) < ArmConstants.kMaxTargetOffset;
     }
@@ -103,7 +105,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public Command getReleaseCommand() {
-        return Commands.sequence(Commands.runOnce(() -> spitOut()), new WaitCommand(2), Commands.runOnce(() -> stopIntake()));
+        return Commands.sequence(Commands.runOnce(() -> lockIntakeCommand = true), Commands.runOnce(() -> spitOut()), new WaitCommand(2), Commands.runOnce(() -> stopIntake()),Commands.runOnce(() -> lockIntakeCommand = false));
     }
 
     @Override
@@ -117,6 +119,7 @@ public class ArmSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("ArmSubsystem/Error", error);
         SmartDashboard.putBoolean("ArmSubsystem/Has_Coral", hasGamePiece());
 
+        if(!lockIntakeCommand) {
         if (RobotContainer.m_SysController.getLeftTriggerAxis() > 0) {
             intake();
         } else if (RobotContainer.m_SysController.getRightTriggerAxis() == 0) {
@@ -126,6 +129,7 @@ public class ArmSubsystem extends SubsystemBase {
         if (RobotContainer.m_SysController.getRightTriggerAxis() > 0) {
             spitOut();
         }
+    }
          arm_ClosedLoopController.setReference(Rotation2d.fromDegrees(targetPosition).getRadians(),
         ControlType.kPosition);
 

@@ -11,7 +11,7 @@ public class ScoreCommand extends Command {
     private final ElevatorSubsystem m_elevator;
     private final ArmSubsystem m_arm;
     public final ElevatorArmProfile m_effector;
-    private ElevatorArmState currentProfile = new ElevatorArmState(0, 0, 90);
+    public ElevatorArmState currentProfile = new ElevatorArmState(0, 0, 90);
 
     public ScoreCommand(ElevatorSubsystem elevator, ArmSubsystem arm) {
         this.m_arm = arm;
@@ -32,9 +32,8 @@ public class ScoreCommand extends Command {
 
     public Command getReleaseCommand() {
         Command releaseCommand = m_arm.getReleaseCommand(); // release coral
-        Command armDownCommand = m_arm.getSetArmPositionCommand(currentProfile.score); // move
 
-        return Commands.sequence(armDownCommand, releaseCommand);
+        return Commands.sequence(Commands.waitUntil(() -> m_arm.atTarget()),releaseCommand);
     }
 
 }

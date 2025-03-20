@@ -75,6 +75,16 @@ public class RobotContainer {
     // m_arm.setDefaultCommand(new RunCommand(() ->
     // m_arm.set(m_driverController.getRightY()), m_arm));
 
+    m_arm.setDefaultCommand(new RunCommand(() -> {
+      if (m_SysController.getRightBumperButtonPressed()) {
+        //set to current score position
+          m_arm.setTarget(g_score.currentProfile.score);
+          //schedule release when at target
+          g_score.getReleaseCommand().schedule();
+      }
+  }, m_arm));
+
+
     // Configure default commands
     m_robotDrive.setDefaultCommand( // default command similar to a loop system
         // The left stick controls translation of the robot.
@@ -108,7 +118,7 @@ public class RobotContainer {
 
 
     //Release Command moves arm down & Spits out coral 
-    new Trigger(() -> m_SysController.getRightBumperButtonPressed()).onTrue(g_score.getReleaseCommand());
+    // new Trigger(() -> m_SysController.getRightBumperButtonPressed()).onTrue(g_score.getReleaseCommand());
 
     // new Trigger(() -> m_SysController.getRightBumperButtonPressed())
     // .onTrue(new InstantCommand(() -> g_score.getReleaseCommand().schedule()));
