@@ -3,6 +3,7 @@ package frc.robot.vision;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -44,6 +45,10 @@ public class Alignment extends SubsystemBase {
    public void periodic() {
     //get pose relative to robot so we can minimize coordinates
      targetedTagPose = RobotContainer.pose_estimator.getTargetedTagPose(Constants.VisionConstants.kLimelightFront);
+
+     SmartDashboard.putNumber("Alignment/Relative_X", targetedTagPose.getX());
+     SmartDashboard.putNumber("Alignment/Relative_Y", targetedTagPose.getY());
+     SmartDashboard.putNumber("Alignment/Relative_Rotation", targetedTagPose.getRotation().getDegrees());
 
     boolean lbActive = RobotContainer.m_driverController.getLeftBumperButton();
     boolean rbActive = RobotContainer.m_driverController.getRightBumperButton();
