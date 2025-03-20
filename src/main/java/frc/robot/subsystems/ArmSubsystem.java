@@ -130,7 +130,7 @@ public class ArmSubsystem extends SubsystemBase {
             spitOut();
         }
     }
-        if(targetPosition > 180) {
+        if(targetPosition > 190) {
             targetPosition = 0;
         }
          arm_ClosedLoopController.setReference(Rotation2d.fromDegrees(targetPosition).getRadians(),
