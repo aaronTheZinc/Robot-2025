@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -169,10 +171,19 @@ public final class Constants {
         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
   }
 
+  
+
   public static final class VisionConstants {
     public static final String kLimelightFront = "limelight";
     public static final String kLimelightBack = "limelight-back";
 
+    public static final Pose2d kLeftReefOffset = new Pose2d(0,0, Rotation2d.fromDegrees(0));
+    public static final Pose2d kRightReefOffset = new Pose2d(0,0, Rotation2d.fromDegrees(0));
+    public static final Pose2d kCenterReefOffset = new Pose2d(0,0, Rotation2d.fromDegrees(0));
+
+    //scale
+    public static final double kTranslationAlignmentP = 0.2;
+    public static final double kThetaAlignmentP = 0.5;
   }
 
   public static final class NeoMotorConstants {

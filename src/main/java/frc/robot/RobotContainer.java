@@ -19,6 +19,7 @@ import frc.robot.commands.ScoreCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.vision.Alignment;
 import frc.robot.vision.PoseEstimator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -45,8 +46,9 @@ public class RobotContainer {
   public static final PoseEstimator pose_estimator = new PoseEstimator();
   private final AutoController a_auto = new AutoController(m_robotDrive, () -> pose_estimator.getEstimatedPose2D());
   private final ScoreCommand g_score = new ScoreCommand(m_elevator, m_arm);
+  private final Alignment m_alignment = new Alignment();
   // The driver's controller
-  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  public static XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   public static XboxController m_SysController = new XboxController(OIConstants.kSystemControllerPort);
 
   public void Intake() {
@@ -90,11 +92,14 @@ public class RobotContainer {
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
-            () -> m_robotDrive.drive(
+            () -> {
+              if(m_alignment.lockChassisControls) return;
+              m_robotDrive.drive(
                 -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-                true),
+                true);
+            },
             m_robotDrive));
   }
 
