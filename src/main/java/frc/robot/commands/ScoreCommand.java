@@ -32,7 +32,7 @@ public class ScoreCommand extends Command {
         SmartDashboard.putNumber("ScoreCommand/SocreDegrees", scoreDeg);
         // Command collectGamePieceCommand = m_arm.getCollectGamePieceCommand();
         Command moveEffectorCommand = m_effector.syncElevatorArm(profile); // move elevator & arm together;
-        Command cmd = Commands.sequence(moveEffectorCommand);
+        Command cmd = Commands.sequence(Commands.runOnce(() -> scoreDeg = profile.score),moveEffectorCommand);
 
         cmd.setName(name);
         SmartDashboard.putData(cmd);
