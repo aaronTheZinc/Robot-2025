@@ -78,7 +78,7 @@ public class RobotContainer {
     m_arm.setDefaultCommand(new RunCommand(() -> {
       if (m_SysController.getRightBumperButtonPressed()) {
         //set to current score position
-          m_arm.setTarget(g_score.currentProfile.score);
+          m_arm.setTarget(g_score.getScoreDegrees());
           //schedule release when at target
           g_score.getReleaseCommand().schedule();
       }
