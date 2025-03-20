@@ -20,7 +20,9 @@ public class ScoreCommand extends Command {
     };
 
     public Command getScoreCommand(ElevatorArmState profile, String name) {
-        currentProfile = profile;
+        currentProfile.arm = profile.arm;
+        currentProfile.elevator = profile.elevator;
+        currentProfile.score = profile.score;
         // Command collectGamePieceCommand = m_arm.getCollectGamePieceCommand();
         Command moveEffectorCommand = m_effector.syncElevatorArm(profile); // move elevator & arm together;
         Command cmd = Commands.sequence(moveEffectorCommand);

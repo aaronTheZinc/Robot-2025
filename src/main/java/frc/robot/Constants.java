@@ -142,9 +142,9 @@ public final class Constants {
 
   // Define the ElevatorArmState class
   public static class ElevatorArmState {
-    public final double elevator;
-    public final double arm;
-    public final double score;
+    public  double elevator;
+    public  double arm;
+    public  double score;
 
     // Constructor to initialize the fields
     public ElevatorArmState(double elevator, double arm, double score) {
