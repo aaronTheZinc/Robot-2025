@@ -174,6 +174,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new PathPlannerAuto("auto-1-right");
+    return Commands.sequence(new RunCommand(() ->  m_robotDrive.drive(0.3, 0, 0, false), m_robotDrive)).withTimeout(3.5);
   }
 }
