@@ -56,19 +56,19 @@ public class Alignment extends SubsystemBase {
 
     //bind controls that apply relative offsets to targeted tag
     if(startBtnActive) {
-        poseOffsetCenter = getPoseOffset(targetedTagPose, VisionConstants.kCenterReefOffset);
+        poseOffsetCenter = VisionConstants.kCenterReefOffset;
         targetPose = poseOffsetCenter;
-    }
-
-    if(lbActive) {
-        poseOffsetLeft = getPoseOffset(targetedTagPose, VisionConstants.kLeftReefOffset);
+        }
+        
+        if(lbActive) {
+        poseOffsetLeft = VisionConstants.kLeftReefOffset;
         targetPose = poseOffsetLeft;
-    }
-
-    if(rbActive) {
-        poseOffsetRight = getPoseOffset(targetedTagPose, VisionConstants.kRightReefOffset);
+        }
+        
+        if(rbActive) {
+        poseOffsetRight = VisionConstants.kRightReefOffset;
         targetPose = poseOffsetRight;
-    }
+        }
 
     //minimize distances to offset angles defined in vision constants
     if(lbActive || rbActive || startBtnActive) {

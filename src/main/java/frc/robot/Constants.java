@@ -86,10 +86,10 @@ public final class Constants {
   public static final class ElevatorConstants {
     public static final double kPositionCollect = -18;
     public static final double kLevel1 = -4.96;
-    public static final double kLevel2 = -5.01;
-    public static final double kLevel3 = -12.0;
+    public static final double kLevel2 = -12.51;
+    public static final double kLevel3 = -33.0;
     public static final double kLevel4 = -76;
-    public static final double kStore = -24;
+    public static final double kStore = -23;
 
     public static final double kMaxTargetOffset = 0.1;
     public static final double elevatorWinchDiameter = 1.65;
@@ -103,8 +103,8 @@ public final class Constants {
     public static final double kMaxTargetOffset = 0.05;
 
     public static final double kLevel1 = 89;
-    public static final double kLevel2 = 44.6;
-    public static final double kLevel3 = 52.0;
+    public static final double kLevel2 = 45.0;
+    public static final double kLevel3 = 45.0;
     public static final double kLevel4 = 42.5;
 
     public static final double armHeightMeters = Units.inchesToMeters(60);
@@ -177,13 +177,13 @@ public final class Constants {
     public static final String kLimelightFront = "limelight";
     public static final String kLimelightBack = "limelight-back";
 
-    public static final Pose2d kLeftReefOffset = new Pose2d(0,0, Rotation2d.fromDegrees(0));
-    public static final Pose2d kRightReefOffset = new Pose2d(0,0, Rotation2d.fromDegrees(0));
-    public static final Pose2d kCenterReefOffset = new Pose2d(0,0, Rotation2d.fromDegrees(0));
+    public static final Pose2d kLeftReefOffset = new Pose2d(0.064,-0.39, Rotation2d.fromDegrees(0));
+    public static final Pose2d kRightReefOffset = new Pose2d(-0.27,-0.37, Rotation2d.fromDegrees(0));
+    public static final Pose2d kCenterReefOffset = new Pose2d(-0.086,-0.38, Rotation2d.fromDegrees(0));
 
     //scale
-    public static final double kTranslationAlignmentP = 0.2;
-    public static final double kThetaAlignmentP = 0.5;
+    public static final double kTranslationAlignmentP = 0.6;
+    public static final double kThetaAlignmentP = 0.6;
   }
 
   public static final class NeoMotorConstants {

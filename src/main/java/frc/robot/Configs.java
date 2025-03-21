@@ -32,8 +32,8 @@ public final class Configs {
                 // elevatorConfig.encoder.inverted(true);
                 elevatorConfig.idleMode(IdleMode.kBrake);
                 // elevatorConfig.closedLoop.feedbackSensor(FeedbackSensor.);
-                elevatorConfig.closedLoop.pid(0.3, 0, 0)
-                .outputRange(-0.2, 0.2);
+                elevatorConfig.closedLoop.pid(0.5, 0, 0)
+                .outputRange(-0.5, 0.5);
 
         }
 
