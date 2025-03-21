@@ -113,9 +113,10 @@ public class ArmSubsystem extends SubsystemBase {
         currentPosition = arm_encoder.getPosition();
 
         double error = targetPosition - currentPosition;
+        double currentDegrees = Rotation2d.fromRadians(currentPosition).getDegrees();
         SmartDashboard.putBoolean("ArmSubsystem/Ready", atTarget());
         SmartDashboard.putNumber("ArmSubsystem/TargetPosition", targetPosition);
-        SmartDashboard.putNumber("ArmSubsystem/Position", Rotation2d.fromRadians(currentPosition).getDegrees());
+        SmartDashboard.putNumber("ArmSubsystem/Position", currentDegrees);
         SmartDashboard.putNumber("ArmSubsystem/Error", error);
         SmartDashboard.putBoolean("ArmSubsystem/Has_Coral", hasGamePiece());
 
@@ -130,9 +131,12 @@ public class ArmSubsystem extends SubsystemBase {
             spitOut();
         }
     }
-        if(targetPosition > 190) {
-            targetPosition = 0;
+        //spin motor down so that its within pid range
+        if(currentDegrees > 190) {
+            arm_motor.set(0.2);
+            return;
         }
+
          arm_ClosedLoopController.setReference(Rotation2d.fromDegrees(targetPosition).getRadians(),
         ControlType.kPosition);
 
