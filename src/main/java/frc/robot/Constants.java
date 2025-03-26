@@ -85,27 +85,33 @@ public final class Constants {
 
   public static final class ElevatorConstants {
     public static final double kPositionCollect = -18;
-    public static final double kLevel1 = -4.96;
-    public static final double kLevel2 = -12.51;
-    public static final double kLevel3 = -33.0;
-    public static final double kLevel4 = -76;
+    public static final double kLevel1 = -10.96;
+    public static final double kLevel2 = -0.5;
+    public static final double kLevel3 = -23.0;
+    public static final double kLevel4 = -62.5;
     public static final double kStore = -23;
+    public static final double kAlgae3 = -28;
+    public static final double kAlgae2 = -14;
+
 
     public static final double kMaxTargetOffset = 0.1;
     public static final double elevatorWinchDiameter = 1.65;
-    public static final double elevatorGearRatio = 9;
+    public static final double elevatorGearRatio = 12;
     public static final double kEncoderConversionFactor = Math.PI * (elevatorWinchDiameter) / elevatorGearRatio;
 
   }
 
   public static final class ArmConstants {
     public static final double kPositionCollect = 184;
-    public static final double kMaxTargetOffset = 0.05;
+    public static final double kMaxTargetOffset = 2.5;
 
     public static final double kLevel1 = 89;
-    public static final double kLevel2 = 45.0;
-    public static final double kLevel3 = 45.0;
-    public static final double kLevel4 = 42.5;
+    public static final double kLevel2 = 20;
+    public static final double kLevel3 = 15.0;
+    public static final double kLevel4 = 37.5;
+    public static final double kAlgae3 = 58;
+    public static final double kAlgae2 = 55;
+
 
     public static final double armHeightMeters = Units.inchesToMeters(60);
     public static final double armGearRatio = 9;
@@ -137,6 +143,14 @@ public final class Constants {
         66);
     public static final ElevatorArmState kLevel4 = new ElevatorArmState(ElevatorConstants.kLevel4, ArmConstants.kLevel4,
         90);
+
+        //19.5arm 57.5 elevator l4
+
+    public static final ElevatorArmState kAlgae3 = new ElevatorArmState(ElevatorConstants.kAlgae3, ArmConstants.kAlgae3,
+        90);   
+        
+    public static final ElevatorArmState kAlgae2 = new ElevatorArmState(ElevatorConstants.kAlgae2, ArmConstants.kAlgae2,
+        90);    
      public static final ElevatorArmState kStore = new ElevatorArmState(ElevatorConstants.kStore, ArmConstants.kPositionCollect,
         ArmConstants.kPositionCollect);
 
@@ -177,13 +191,22 @@ public final class Constants {
     public static final String kLimelightFront = "limelight";
     public static final String kLimelightBack = "limelight-back";
 
-    public static final Pose2d kLeftReefOffset = new Pose2d(0.064,-0.39, Rotation2d.fromDegrees(0));
-    public static final Pose2d kRightReefOffset = new Pose2d(-0.27,-0.37, Rotation2d.fromDegrees(0));
+    public static final Pose2d kLeftReefOffset = new Pose2d(0.225,-0.323, Rotation2d.fromDegrees(0));
+    public static final Pose2d kRightReefOffset = new Pose2d(2.5,4, Rotation2d.fromDegrees(0.1));
     public static final Pose2d kCenterReefOffset = new Pose2d(-0.086,-0.38, Rotation2d.fromDegrees(0));
 
-    //scale
-    public static final double kTranslationAlignmentP = 0.6;
-    public static final double kThetaAlignmentP = 0.6;
+    public static final Pose2d kScoreAuto = new Pose2d(5.907,3.709, Rotation2d.fromDegrees(180));
+
+    //right tag 7
+    public static final Pose2d kScoreAuto2 = new Pose2d(3.181,3.855, Rotation2d.fromDegrees(-5.6));
+
+    public static final Pose2d kScoreL4 = new Pose2d(3.057,4.263, Rotation2d.fromDegrees(-3.12));
+
+    //left tag 7
+    public static final Pose2d kScoreAutoLeft = new Pose2d(3.095,4.2, Rotation2d.fromDegrees(-7));
+
+    public static final double kTranslationAlignmentP = 1;
+    public static final double kThetaAlignmentP = 0.08;
   }
 
   public static final class NeoMotorConstants {

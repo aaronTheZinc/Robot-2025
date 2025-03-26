@@ -16,6 +16,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.ElevatorArmProfiles;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -23,23 +29,25 @@ public class AutoController {
     private final DriveSubsystem m_chassis;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
     private String m_autoSelected;
+    private final ScoreCommand g_score;
     // private Supplier<Pose2d> getEstimatedPose;
 
-    public AutoController(DriveSubsystem chassis, Supplier<Pose2d> poseSupplier) {
+    public AutoController(DriveSubsystem chassis, Supplier<Pose2d> poseSupplier, ScoreCommand score) {
+        this.g_score = score;
 
         this.m_chassis = chassis;
         RobotConfig config;
         try {
             config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
-                    this.m_chassis::getPose, // Robot pose supplier
+                    RobotContainer.pose_estimator::getEstimatedPose2D, // Robot pose supplier
                     this.m_chassis::resetOdometry, // Method to reset odometry (will be called if your auto has a
                                                    // starting pose)
-                    this.m_chassis::getRobotRelativeChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                    (speeds, feedforwards) -> this.m_chassis.driveRelative(speeds),
+                    this.m_chassis::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                    (speeds, feedforwards) -> this.m_chassis.driveRobotRelative(speeds),
                     new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller
                                                     // for holonomic drive trains
-                            new PIDConstants(0.0, 0.0, 0.0), // Translation PID constants
+                            new PIDConstants(2.0, 0.0, 0.0), // Translation PID constants
                             new PIDConstants(2.0, 0.0, 0.0) // Rotation PID constants
                     ),
 
@@ -90,6 +98,21 @@ public class AutoController {
     public String getSelectedAuto() {
         m_autoSelected = m_chooser.getSelected();
         return m_autoSelected;
+    };
+
+
+    public Command getScoreLevel4() {
+
+        return Commands.sequence( 
+            new RunCommand(() ->  RobotContainer.m_robotDrive.drive(0.3, 0, 0, false), RobotContainer.m_robotDrive).withTimeout(3),  
+            new InstantCommand(() -> {
+                RobotContainer.m_alignment.setTagRelativePose(Constants.VisionConstants.kRightReefOffset);
+                RobotContainer.m_alignment.setAutoBypass(true);
+            }),
+            new WaitUntilCommand(() -> RobotContainer.m_alignment.inAlignmentRange()).andThen(() -> RobotContainer.m_alignment.setAutoBypass(false)),
+            g_score.getScoreCommand(Constants.ElevatorArmProfiles.kLevel4,"l4 auto"),
+            g_score.getReleaseCommand(true)
+        );
     }
 
 }

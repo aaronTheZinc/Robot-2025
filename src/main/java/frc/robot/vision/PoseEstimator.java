@@ -12,14 +12,19 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.vision.LimelightHelpers.PoseEstimate;
 
 public class PoseEstimator extends SubsystemBase {
     private final SwerveDrivePoseEstimator pose_estimator;
+    private final SwerveDrivePoseEstimator relative_estimator;
     private Alliance current_aliance;
+    private double lastDetectedTagID = -1;
+
 
     public PoseEstimator() {
         Rotation2d intialRotation2D = new Rotation2d();
@@ -32,20 +37,24 @@ public class PoseEstimator extends SubsystemBase {
         initialSwerveModulePositions[3] = new SwerveModulePosition();
         this.pose_estimator = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, intialRotation2D,
                 initialSwerveModulePositions, initialPose2D);
+        this.relative_estimator = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, intialRotation2D,
+        initialSwerveModulePositions, initialPose2D);       
 
         Optional<Alliance> team = DriverStation.getAlliance();
         if (team.isEmpty()) {
             return;
         };
 
+     
         current_aliance = team.get();
     }
 
     public Pose2d getTeamBotPose(String limelightName) {
+
         if (current_aliance == Alliance.Blue) {
-            return LimelightHelpers.getBotPose2d_wpiBlue(limelightName);
+            return LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName).pose;
         } else {
-            return LimelightHelpers.getBotPose2d_wpiRed(limelightName);
+            return LimelightHelpers.getBotPoseEstimate_wpiRed(limelightName).pose;
         }
     }
 
@@ -54,45 +63,68 @@ public class PoseEstimator extends SubsystemBase {
         return pose.toPose2d();
     }
 
+    public double getDegrees360(double angle) {
+        double degrees = 0;
+        if(angle < 0) {
+          degrees = 360 - Math.abs(angle);
+        } else {
+            degrees = angle;
+        }
+
+        return degrees;
+    }
+
+    private void log() {
+        Pose2d tagRelative = getTagRelativePose();
+        Pose2d fieldPose = pose_estimator.getEstimatedPosition();
+        SmartDashboard.putNumber("PoseEstimator/TagRelative/X", tagRelative.getX());
+        SmartDashboard.putNumber("PoseEstimator/TagRelative/Y", tagRelative.getY());
+        SmartDashboard.putNumber("PoseEstimator/TagRelative/Degrees", tagRelative.getRotation().getDegrees());
+        SmartDashboard.putNumber("PoseEstimator/LastDetectedTagID", lastDetectedTagID);
+        SmartDashboard.putBoolean("PoseEstimator/TagDetected", LimelightHelpers.getTV(VisionConstants.kLimelightFront));
+
+        SmartDashboard.putNumber("PoseEstimator/Field/X", fieldPose.getX());
+        SmartDashboard.putNumber("PoseEstimator/Field/Y", fieldPose.getY());
+        SmartDashboard.putNumber("PoseEstimator/Field/R", fieldPose.getRotation().getDegrees());
+        SmartDashboard.putNumber("PoseEstimator/Field/R360", fieldPose.getRotation().getDegrees() % 360);
+    }
+
 
     
 
     @Override
     public void periodic() {
         double time = getTime();
-        
+
+        Rotation2d chassisRotation = Rotation2d.fromDegrees(RobotContainer.m_robotDrive.getHeading());
+        SmartDashboard.putNumber("PoseEstimator/Chassis Rotation: ", chassisRotation.getDegrees());
+        SmartDashboard.putNumber("PoseEstimator/Estimated Rotation: ", pose_estimator.getEstimatedPosition().getRotation().getDegrees());
         // add chassis measurement
-        // this.pose_estimator.update(Rotation2d.fromDegrees(RobotContainer.m_robotDrive.getHeading()), RobotContainer.m_robotDrive.getModulePositions());
-        Pose2d averaged_vision_pose;
-        Boolean frontHasTarget =  LimelightHelpers.getTV(VisionConstants.kLimelightFront);
-        Boolean backHasTarget =  LimelightHelpers.getTV(VisionConstants.kLimelightFront);
-
-        if(frontHasTarget) {
-            pose_estimator.addVisionMeasurement(getTeamBotPose(VisionConstants.kLimelightFront), time);
-        }
-
-        if (frontHasTarget && backHasTarget) {
-            Pose2d limelight_f = getTeamBotPose(VisionConstants.kLimelightFront);
-            Pose2d limelight_b = getTeamBotPose(VisionConstants.kLimelightBack);
-
-            averaged_vision_pose = new Pose2d(
-                (limelight_f.getX() + limelight_b.getX()) / 2,
-                (limelight_f.getY() + limelight_b.getY()) / 2,
-                 Rotation2d.fromRadians((limelight_f.getRotation().getRadians() + limelight_b.getRotation().getRadians()) /2)
-            );
-
-            limelight_f.getX();
-            limelight_f.getY();
+        this.pose_estimator.update(chassisRotation, RobotContainer.m_robotDrive.getModulePositions());
+        this.relative_estimator.update(Rotation2d.fromDegrees(RobotContainer.m_robotDrive.getHeading()), RobotContainer.m_robotDrive.getModulePositions());
         
-        }else {
-            averaged_vision_pose = getTeamBotPose(frontHasTarget ? VisionConstants.kLimelightFront : VisionConstants.kLimelightBack);
-        };
+        log();
 
-        pose_estimator.addVisionMeasurement(averaged_vision_pose, time);
+        Boolean frontHasTarget =  LimelightHelpers.getTV(VisionConstants.kLimelightFront);
+     
+        if(frontHasTarget) {
+            Pose2d fieldRelativePose = getTeamBotPose(VisionConstants.kLimelightFront);
+            Pose2d tagRelativePose = getTargetedTagPose(VisionConstants.kLimelightFront);
+            double detectedID = LimelightHelpers.getFiducialID(VisionConstants.kLimelightFront);
 
+            // if(lastDetectedTagID != detectedID) {
+            //     relative_estimator.resetPose(new Pose2d());
+            // }
+            lastDetectedTagID = detectedID;
+            pose_estimator.addVisionMeasurement(fieldRelativePose, time);
+            //ignore detected tags on other side
+            if(Math.abs(tagRelativePose.getRotation().getDegrees()) > 20) return;
+            relative_estimator.addVisionMeasurement(tagRelativePose, time); 
+        }
+    };
 
-
-
+    public Pose2d getTagRelativePose() {
+        return relative_estimator.getEstimatedPosition();
     }
 
 

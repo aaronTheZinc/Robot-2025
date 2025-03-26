@@ -15,7 +15,7 @@ public final class Configs {
                         armConfig.encoder.positionConversionFactor(ElevatorConstants.kEncoderConversionFactor);
                         armConfig.idleMode(IdleMode.kBrake);
                         armConfig.closedLoop.pid(0.3, 0, 0)
-                        .outputRange(-0.3, 0.3)
+                        .outputRange(-0.5, 0.5)
                         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
 
                         armConfig.absoluteEncoder.positionConversionFactor(2 * Math.PI);
@@ -32,8 +32,8 @@ public final class Configs {
                 // elevatorConfig.encoder.inverted(true);
                 elevatorConfig.idleMode(IdleMode.kBrake);
                 // elevatorConfig.closedLoop.feedbackSensor(FeedbackSensor.);
-                elevatorConfig.closedLoop.pid(0.5, 0, 0)
-                .outputRange(-0.5, 0.5);
+                elevatorConfig.closedLoop.pid(0.6, 0, 0)
+                .outputRange(-1, 1);
 
         }
 

@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import com.pathplanner.lib.auto.*;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -44,9 +45,10 @@ public class RobotContainer {
   private final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
   public static final ArmSubsystem m_arm = new ArmSubsystem();
   public static final PoseEstimator pose_estimator = new PoseEstimator();
-  private final AutoController a_auto = new AutoController(m_robotDrive, () -> pose_estimator.getEstimatedPose2D());
-  private final ScoreCommand g_score = new ScoreCommand(m_elevator, m_arm);
-  private final Alignment m_alignment = new Alignment();
+  public  final ScoreCommand g_score = new ScoreCommand(m_elevator, m_arm);
+  private final AutoController a_auto = new AutoController(m_robotDrive, () -> pose_estimator.getEstimatedPose2D(), g_score );
+
+  public static final Alignment m_alignment = new Alignment();
   // The driver's controller
   public static XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   public static XboxController m_SysController = new XboxController(OIConstants.kSystemControllerPort);
@@ -78,11 +80,17 @@ public class RobotContainer {
     // m_arm.set(m_driverController.getRightY()), m_arm));
 
     m_arm.setDefaultCommand(new RunCommand(() -> {
+      if(m_driverController.getBButtonPressed()) {
+        m_arm.increment();
+      }
+      if(m_driverController.getXButtonPressed()) {
+        m_arm.decrement();
+      }
       if (m_SysController.getRightBumperButtonPressed()) {
-        //set to current score position
+        //set to current score position()
           m_arm.setTarget(g_score.getScoreDegrees());
           //schedule release when at target
-          g_score.getReleaseCommand().schedule();
+          g_score.getReleaseCommand(false).schedule();
       }
   }, m_arm));
 
@@ -123,6 +131,12 @@ public class RobotContainer {
     new JoystickButton(m_driverController, XboxController.Button.kA.value).onTrue(new InstantCommand(() -> m_elevator.decrement(), m_elevator));
 
 
+    Command l3Algae = g_score.getAlgae3();
+    Command l2Algae = g_score.getAlgae2();
+
+    new Trigger(() -> m_driverController.getLeftTriggerAxis() > 0).onTrue(l3Algae);
+    new Trigger(() -> m_driverController.getRightTriggerAxis() > 0).onTrue(l2Algae);
+
     //Release Command moves arm down & Spits out coral 
     // new Trigger(() -> m_SysController.getRightBumperButtonPressed()).onTrue(g_score.getReleaseCommand());
 
@@ -132,7 +146,7 @@ public class RobotContainer {
 
 
     new JoystickButton(m_SysController, XboxController.Button.kY.value)
-    .onTrue(g_score.getScoreCommand(ElevatorArmProfiles.kLevel1, "L1"));
+    .onTrue(g_score.getLevel1Command());
 
     new JoystickButton(m_SysController, XboxController.Button.kX.value)
     .onTrue(g_score.getScoreCommand(ElevatorArmProfiles.kLevel2, "L2"));
@@ -149,7 +163,7 @@ public class RobotContainer {
 
     //if this doesnt work use control command below this one
     new JoystickButton(m_SysController, XboxController.Button.kStart.value)
-    .onTrue(g_score.getScoreCommand(ElevatorArmProfiles.kStore, "reset height"));
+    .onTrue(g_score.getStoreCommand());
 
     // new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
     // .onTrue(g_score.getScoreCommand(ElevatorArmProfiles.kStore, "reset height"));
@@ -158,9 +172,8 @@ public class RobotContainer {
 
   public Command followPath() {
     try {
-      Pose2d startingPose2d = new Pose2d(7.456, 3.953, Rotation2d.fromDegrees(0));
-      PathPlannerPath centerPath = PathPlannerPath.fromPathFile("center-score");
-      m_robotDrive.resetOdometry(startingPose2d);
+      PathPlannerPath centerPath = PathPlannerPath.fromPathFile("center-test");
+      // m_robotDrive.resetOdometry(startingPose2d);
       return Commands.sequence(AutoBuilder.followPath(centerPath));
     } catch (Exception e) {
       DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
@@ -175,6 +188,14 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return Commands.sequence(g_score.getScoreCommand(ElevatorArmProfiles.kLevel2, "L2"),new RunCommand(() ->  m_robotDrive.drive(0.3, 0, 0, false), m_robotDrive)).withTimeout(3.5);
+    // return Commands.none();
+    // return a_auto.getScoreLevel4();
+    return Commands.sequence(
+      new InstantCommand(() -> m_alignment.setAutoBypass(true), m_alignment),
+      new WaitCommand(3),
+      new InstantCommand(() -> m_alignment.setAutoBypass(false), m_alignment)
+
+    );
+    // return Commands.sequence(new RunCommand(() ->  m_robotDrive.drive(0.3, 0, 0, false), m_robotDrive)).withTimeout(1);
   }
 }

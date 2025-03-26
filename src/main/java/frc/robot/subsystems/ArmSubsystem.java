@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Configs;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
 
@@ -44,7 +45,7 @@ public class ArmSubsystem extends SubsystemBase {
         arm_motor.configure(Configs.Arm.armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         arm_encoder = arm_motor.getAbsoluteEncoder();
     };
-
+    
     public boolean hasGamePiece() {
         double current = (intake_motor_1.getOutputCurrent() + intake_motor_2.getOutputCurrent()) / 2;
         SmartDashboard.putNumber("ArmSubsystem/IntakeCurrent", current);
@@ -82,8 +83,13 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void spitOut() {
-        intake_motor_2.set(-1 * 0.25);
-        intake_motor_1.set(0.25);
+        double speed = 0.25;
+        if (targetPosition == Constants.ArmConstants.kLevel1)  {
+            intake_motor_2.set(-1 * 0.17); 
+        }else {
+        intake_motor_2.set(-1 * speed);
+        }
+        intake_motor_1.set(speed);
     }
 
     public Boolean atTarget() {
@@ -108,12 +114,17 @@ public class ArmSubsystem extends SubsystemBase {
         return Commands.sequence(Commands.runOnce(() -> lockIntakeCommand = true), Commands.runOnce(() -> spitOut()), new WaitCommand(2), Commands.runOnce(() -> stopIntake()),Commands.runOnce(() -> lockIntakeCommand = false));
     }
 
+    public void yeetThatHoe() {
+        intake_motor_2.set(-1);
+        intake_motor_1.set(1);
+    }
+
     @Override
     public void periodic() {
         currentPosition = arm_encoder.getPosition();
 
-        double error = targetPosition - currentPosition;
         double currentDegrees = Rotation2d.fromRadians(currentPosition).getDegrees();
+        double error = targetPosition - currentDegrees;
         SmartDashboard.putBoolean("ArmSubsystem/Ready", atTarget());
         SmartDashboard.putNumber("ArmSubsystem/TargetPosition", targetPosition);
         SmartDashboard.putNumber("ArmSubsystem/Position", currentDegrees);
@@ -133,9 +144,10 @@ public class ArmSubsystem extends SubsystemBase {
     }
         //spin motor down so that its within pid range
         if(currentDegrees > 190) {
-            arm_motor.set(0.2);
+            arm_motor.set(0.08);
             return;
         }
+
 
          arm_ClosedLoopController.setReference(Rotation2d.fromDegrees(targetPosition).getRadians(),
         ControlType.kPosition);

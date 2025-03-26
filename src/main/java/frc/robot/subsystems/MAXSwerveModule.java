@@ -28,11 +28,10 @@ public class MAXSwerveModule {
 
   private final SparkClosedLoopController m_drivingClosedLoopController;
   private final SparkClosedLoopController m_turningClosedLoopController;
-  private final double loggedTime = 0;
-  private SwerveModulePosition desiredPosition;
+
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
-  private SwerveModuleState m_simulatedState = new SwerveModuleState(0, new Rotation2d());
+
   /**
    * Constructs a MAXSwerveModule and configures the driving and turning motor,
    * encoder, and PID controller. This configuration is specific to the REV
@@ -42,6 +41,7 @@ public class MAXSwerveModule {
   public MAXSwerveModule(int drivingCANId, int turningCANId, double chassisAngularOffset) {
     m_drivingSpark = new SparkMax(drivingCANId, MotorType.kBrushless);
     m_turningSpark = new SparkMax(turningCANId, MotorType.kBrushless);
+
     m_drivingEncoder = m_drivingSpark.getEncoder();
     m_turningEncoder = m_turningSpark.getAbsoluteEncoder();
 
@@ -59,7 +59,6 @@ public class MAXSwerveModule {
     m_chassisAngularOffset = chassisAngularOffset;
     m_desiredState.angle = new Rotation2d(m_turningEncoder.getPosition());
     m_drivingEncoder.setPosition(0);
-    desiredPosition = new SwerveModulePosition(0, Rotation2d.fromDegrees(0));
   }
 
   /**
@@ -74,10 +73,6 @@ public class MAXSwerveModule {
         new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
   }
 
-  public SwerveModuleState getSimulatedState() {
-    return m_simulatedState;
-  }
-
   /**
    * Returns the current position of the module.
    *
@@ -89,10 +84,6 @@ public class MAXSwerveModule {
     return new SwerveModulePosition(
         m_drivingEncoder.getPosition(),
         new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
-  }
-
-  public SwerveModulePosition getSimulatedPosition() {
-    return desiredPosition;
   }
 
   /**
@@ -114,11 +105,6 @@ public class MAXSwerveModule {
     m_turningClosedLoopController.setReference(correctedDesiredState.angle.getRadians(), ControlType.kPosition);
 
     m_desiredState = desiredState;
-
-    Rotation2d theta = new Rotation2d(correctedDesiredState.angle.getRadians() - m_chassisAngularOffset);
-
-    desiredPosition = new SwerveModulePosition(correctedDesiredState.speedMetersPerSecond, theta);
-    m_simulatedState = new SwerveModuleState(correctedDesiredState.speedMetersPerSecond, theta);
   }
 
   /** Zeroes all the SwerveModule encoders. */

@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants;
 import frc.robot.Constants.ElevatorArmState;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -22,8 +23,21 @@ public class ElevatorArmProfile {
         elevatorPositionCommand.setName("Elevator Positon");
         armPositionCommand.setName("Arm Position");
         
-        return Commands.parallel(elevatorPositionCommand, armPositionCommand);
+        return Commands.parallel( armPositionCommand, elevatorPositionCommand);
     }
+
+
+    public Command sequenceElevatorArm(ElevatorArmState state) {
+            Command elevatorPositionCommand = m_elevator.getSetElevatorPositionCommand(state.elevator);
+            Command armPositionCommand = m_arm.getSetArmPositionCommand(state.arm);
+            
+            elevatorPositionCommand.setName("Elevator Positon");
+            armPositionCommand.setName("Arm Position");
+            
+            return Commands.sequence(elevatorPositionCommand, armPositionCommand);
+    }
+
+
 
     // public Command score() {
     //     return Commands.sequence(null)

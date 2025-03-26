@@ -8,7 +8,9 @@ import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,6 +35,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    CameraServer.startAutomaticCapture();
     SmartDashboard.putData("Esitmated Pose", _field);
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
@@ -48,7 +51,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    _field.setRobotPose(RobotContainer.pose_estimator.getEstimatedPose2D());
+    Pose2d pose = LimelightHelpers.getBotPoseEstimate_wpiRed("limelight").pose;
+    _field.setRobotPose(m_robotContainer.pose_estimator.getEstimatedPose2D());
+    SmartDashboard.putNumber("EstimatedPose/EstimatedRotation", pose.getRotation().getDegrees());
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
@@ -66,6 +71,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     m_autonomousCommand = m_robotContainer.followPath();
 
     /*

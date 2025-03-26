@@ -34,6 +34,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevator_encoder.setPosition(0);
     }
 
+    public double getTarget() {
+        return targetPosition;
+    }
+
     private void setTarget(double input) {
         targetPosition = input;
     }
@@ -70,6 +74,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("ElevatorSubsystem/Ready", atTarget());
         SmartDashboard.putNumber("ElevatorSubsystem/Target",targetPosition);
         SmartDashboard.putNumber("ElevatorSubsystem/Current",currentPosition);
+
+        SmartDashboard.putNumber("ElevatorSubsystem/Motor_Current", elevator_motor.getOutputCurrent());
 
         double error = targetPosition - currentPosition;
         SmartDashboard.putNumber("ElevatorSubsystem/error", error);
