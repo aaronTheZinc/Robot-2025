@@ -180,6 +180,9 @@ public final class Constants {
     public static final double kPYController = 1;
     public static final double kPThetaController = 1;
 
+    public static final double kMaxTranslationError = Units.inchesToMeters(3);
+    public static final Rotation2d kMaxRotationError = Rotation2d.fromDegrees(7);
+
     // Constraint for the motion profiled robot angle controller
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
@@ -205,8 +208,8 @@ public final class Constants {
     //left tag 7
     public static final Pose2d kScoreAutoLeft = new Pose2d(3.095,4.2, Rotation2d.fromDegrees(-7));
 
-    public static final double kTranslationAlignmentP = 1;
-    public static final double kThetaAlignmentP = 0.08;
+    public static final double kTranslationAlignmentP = 4;
+    public static final double kThetaAlignmentP = 5;
   }
 
   public static final class NeoMotorConstants {

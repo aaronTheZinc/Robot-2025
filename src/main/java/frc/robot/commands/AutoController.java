@@ -74,10 +74,11 @@ public class AutoController {
     public void registerCommands(ScoreCommand g_score) {
         List<Pair<String, Command>> commands = new ArrayList<>();
 
-        commands.add(new Pair<>("score_position_collect", g_score.getScoreCommand(ElevatorArmProfiles.kPositionCollect, "Collect")));
+        commands.add(new Pair<>("score_position_collect",
+                g_score.getScoreCommand(ElevatorArmProfiles.kPositionCollect, "Collect")));
         commands.add(new Pair<>("score_level_1", g_score.getScoreCommand(ElevatorArmProfiles.kLevel1, "L1")));
         commands.add(new Pair<>("score_level_2", g_score.getScoreCommand(ElevatorArmProfiles.kLevel2, "L2")));
-        commands.add(new Pair<>("score_level_3", g_score.getScoreCommand(ElevatorArmProfiles.kLevel3, "L3")) );
+        commands.add(new Pair<>("score_level_3", g_score.getScoreCommand(ElevatorArmProfiles.kLevel3, "L3")));
         commands.add(new Pair<>("score_level_4", g_score.getScoreCommand(ElevatorArmProfiles.kLevel4, "L4")));
 
         NamedCommands.registerCommands(commands);
@@ -87,10 +88,11 @@ public class AutoController {
         List<String> autoNames = AutoBuilder.getAllAutoNames();
         System.out.println("[Initializing Autos]");
         for (int i = 0; i < autoNames.size(); i++) {
-        System.out.println("[Initializing Auto] " + autoNames.get(i));
+            System.out.println("[Initializing Auto] " + autoNames.get(i));
             m_chooser.addOption(autoNames.get(i), autoNames.get(i));
-        };
-        
+        }
+        ;
+
         SmartDashboard.putData("Auto choices", m_chooser);
 
     }
@@ -100,19 +102,19 @@ public class AutoController {
         return m_autoSelected;
     };
 
-
     public Command getScoreLevel4() {
 
-        return Commands.sequence( 
-            new RunCommand(() ->  RobotContainer.m_robotDrive.drive(0.3, 0, 0, false), RobotContainer.m_robotDrive).withTimeout(3),  
-            new InstantCommand(() -> {
-                RobotContainer.m_alignment.setTagRelativePose(Constants.VisionConstants.kRightReefOffset);
-                RobotContainer.m_alignment.setAutoBypass(true);
-            }),
-            new WaitUntilCommand(() -> RobotContainer.m_alignment.inAlignmentRange()).andThen(() -> RobotContainer.m_alignment.setAutoBypass(false)),
-            g_score.getScoreCommand(Constants.ElevatorArmProfiles.kLevel4,"l4 auto"),
-            g_score.getReleaseCommand(true)
-        );
-    }
+        return Commands.sequence(
+                new RunCommand(() -> RobotContainer.m_robotDrive.drive(0.3, 0, 0, false), RobotContainer.m_robotDrive)
+                        .withTimeout(3),
+                new InstantCommand(() -> {
+                    RobotContainer.m_alignment.setTagRelativePose(Constants.VisionConstants.kRightReefOffset);
+                    RobotContainer.m_alignment.setAutoBypass(true);
+                }),
+                new WaitUntilCommand(() -> RobotContainer.m_alignment.inAlignmentRange())
+                        .andThen(() -> RobotContainer.m_alignment.setAutoBypass(false)),
+                g_score.getScoreCommand(Constants.ElevatorArmProfiles.kLevel4, "l4 auto"),
+                g_score.getReleaseCommand(true));
+    };
 
 }
