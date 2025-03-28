@@ -41,7 +41,7 @@ private final SimpleMotorFeedforward translationThetaFF = new SimpleMotorFeedfor
   PIDController thetaPID = new PIDController(VisionConstants.kThetaAlignmentP, 0, 0);
 
 
-  private Pose2d simulatedPose = new Pose2d(5.372, 2.610, Rotation2d.fromDegrees(-117.7));
+  private Pose2d simulatedPose = new Pose2d(7.322, 2.611, Rotation2d.fromDegrees(180));
   private Pose2d targetedTagPose = new Pose2d();
   private Pose2d poseOffsetRight = new Pose2d();
   private Pose2d poseOffsetLeft = new Pose2d();
@@ -100,7 +100,16 @@ private double applyDeadband(double output, double min) {
     return output;
 }
 
-public Command getFollowPathCommand(String pathName) {
+public List<Pose2d> applyFinalRotation(List<Pose2d> trajectory, double degrees, double effectLastPoses) {
+  for(int i = trajectory.size(); i > trajectory.size() - 1 - effectLastPoses; i--) {
+   Pose2d pose = trajectory.get(i);
+   trajectory.set(i, new Pose2d(pose.getX(), pose.getY(), Rotation2d.fromDegrees(degrees)));
+  }
+
+return trajectory;
+}
+
+public Command getFollowPathCommand(String pathName, Rotation2d endRotation) {
     try {
 
         PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
@@ -113,8 +122,10 @@ public Command getFollowPathCommand(String pathName) {
 
         // Create a sequential command group to execute movement through each waypoint
         Command sequence = new SequentialCommandGroup(
-            trajectoryPoses.stream()
-                .map(pose -> getAlignToWaypointCommand(pose, () -> simulatedPose))
+           trajectoryPoses.stream()
+                .map(pose -> getAlignToWaypointCommand(
+                  new Pose2d(pose.getX(), pose.getY(), endRotation)
+                  , () -> RobotContainer.pose_estimator.getEstimatedPose2D()))
                 .toArray(Command[]::new)
         );
 
@@ -151,6 +162,9 @@ public Command getAlignToWaypointCommand(Pose2d targetPose, Supplier<Pose2d> pos
             double xFF = translationXFF.calculate(xVelocity);
             double yFF = translationYFF.calculate(yVelocity);
             double thetaFF = translationThetaFF.calculate(thetaVelocity);
+
+            RobotContainer.m_robotDrive.drive(MathUtil.clamp(xCorrection, -0.4, 0.4), MathUtil.clamp(yCorrection, -0.4, 0.4), 0, false);
+
 
             // Apply motion with deadband
             simulatedPose = new Pose2d(

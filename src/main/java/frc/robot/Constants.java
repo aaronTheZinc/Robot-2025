@@ -88,7 +88,7 @@ public final class Constants {
     public static final double kLevel1 = -10.96;
     public static final double kLevel2 = -0.5;
     public static final double kLevel3 = -23.0;
-    public static final double kLevel4 = -62.5;
+    public static final double kLevel4 = -62;
     public static final double kStore = -23;
     public static final double kAlgae3 = -28;
     public static final double kAlgae2 = -14;
@@ -183,6 +183,8 @@ public final class Constants {
     public static final double kMaxTranslationError = Units.inchesToMeters(3);
     public static final Rotation2d kMaxRotationError = Rotation2d.fromDegrees(7);
 
+    public static final Pose2d kCenterAutoScore = new Pose2d(5.981,4.251, Rotation2d.fromDegrees(0));
+
     // Constraint for the motion profiled robot angle controller
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
@@ -201,14 +203,14 @@ public final class Constants {
     public static final Pose2d kScoreAuto = new Pose2d(5.907,3.709, Rotation2d.fromDegrees(180));
 
     //right tag 7
-    public static final Pose2d kScoreAuto2 = new Pose2d(3.181,3.855, Rotation2d.fromDegrees(-5.6));
+    public static final Pose2d kScoreAuto2 = new Pose2d(3.483,5.306, Rotation2d.fromDegrees(-58));
 
     public static final Pose2d kScoreL4 = new Pose2d(3.057,4.263, Rotation2d.fromDegrees(-3.12));
 
     //left tag 7
     public static final Pose2d kScoreAutoLeft = new Pose2d(3.095,4.2, Rotation2d.fromDegrees(-7));
 
-    public static final double kTranslationAlignmentP = 4;
+    public static final double kTranslationAlignmentP = 2;
     public static final double kThetaAlignmentP = 5;
   }
 

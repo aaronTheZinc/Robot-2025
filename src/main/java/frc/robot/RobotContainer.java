@@ -188,14 +188,15 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    return a_auto.getScoreLevel4();
     // return Commands.none();
     // return a_auto.getScoreLevel4();
-    return Commands.sequence(
-      new InstantCommand(() -> m_alignment.setAutoBypass(true), m_alignment),
-      new WaitCommand(3),
-      new InstantCommand(() -> m_alignment.setAutoBypass(false), m_alignment)
+    // return Commands.sequence(
+    //   new InstantCommand(() -> m_alignment.setAutoBypass(true), m_alignment),
+    //   new WaitCommand(3),
+    //   new InstantCommand(() -> m_alignment.setAutoBypass(false), m_alignment)
 
-    );
+    // );
     // return Commands.sequence(new RunCommand(() ->  m_robotDrive.drive(0.3, 0, 0, false), m_robotDrive)).withTimeout(1);
   }
 }

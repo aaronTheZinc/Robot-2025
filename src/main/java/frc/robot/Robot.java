@@ -36,9 +36,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    CameraServer.startAutomaticCapture();
+    // CameraServer.startAutomaticCapture();
     SmartDashboard.putData("Esitmated Pose", _field);
-    m_autonomousCommand = RobotContainer.m_alignment.getFollowPathCommand("spr-to-feeder");
+    // m_autonomousCommand = RobotContainer.m_alignment.getFollowPathCommand("spr-to-feeder");
 
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
@@ -74,9 +74,11 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    RobotContainer.m_alignment.resetTime();
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
     // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    RobotContainer.m_alignment.resetTime();
 
     /*
      * String autoSelected = SmartDashboard.getString("Auto Selector",
@@ -123,3 +125,4 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {}
 }
+  
