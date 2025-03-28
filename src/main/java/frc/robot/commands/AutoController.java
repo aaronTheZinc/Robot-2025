@@ -42,29 +42,29 @@ public class AutoController {
         RobotConfig config;
         try {
             config = RobotConfig.fromGUISettings();
-            AutoBuilder.configure(
-                    RobotContainer.pose_estimator::getEstimatedPose2D, // Robot pose supplier
-                    this.m_chassis::resetOdometry, // Method to reset odometry (will be called if your auto has a
-                                                   // starting pose)
-                    this.m_chassis::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                    (speeds, feedforwards) -> this.m_chassis.driveRobotRelative(speeds),
-                    new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller
-                                                    // for holonomic drive trains
-                            new PIDConstants(2.0, 0.0, 0.0), // Translation PID constants
-                            new PIDConstants(2.0, 0.0, 0.0) // Rotation PID constants
-                    ),
+            // AutoBuilder.configure(
+            //         RobotContainer.pose_estimator::getEstimatedPose2D, // Robot pose supplier
+            //         this.m_chassis::resetOdometry, // Method to reset odometry (will be called if your auto has a
+            //                                        // starting pose)
+            //         this.m_chassis::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            //         (speeds, feedforwards) -> this.m_chassis.driveRobotRelative(speeds),
+            //         new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller
+            //                                         // for holonomic drive trains
+            //                 new PIDConstants(2.0, 0.0, 0.0), // Translation PID constants
+            //                 new PIDConstants(2.0, 0.0, 0.0) // Rotation PID constants
+            //         ),
 
-                    config, // The robot configuration
-                    () -> {
+            //         config, // The robot configuration
+            //         () -> {
 
-                        var alliance = DriverStation.getAlliance();
-                        if (alliance.isPresent()) {
-                            return alliance.get() == DriverStation.Alliance.Red;
-                        }
-                        return false;
-                    },
-                    this.m_chassis // Reference to this subsystem to set requirements
-            );
+            //             var alliance = DriverStation.getAlliance();
+            //             if (alliance.isPresent()) {
+            //                 return alliance.get() == DriverStation.Alliance.Red;
+            //             }
+            //             return false;
+            //         },
+            //         this.m_chassis // Reference to this subsystem to set requirements
+            // );
         } catch (Exception e) {
             // Handle exception as needed
             e.printStackTrace();
@@ -108,6 +108,7 @@ public class AutoController {
     public Command getScoreLevel4() {
 
         return Commands.sequence(
+            new InstantCommand(() -> RobotContainer.m_robotDrive.resetOdometry(new Pose2d()), RobotContainer.m_robotDrive),
                g_score.getScoreCommand(Constants.ElevatorArmProfiles.kLevel4, "l4 auto"),
             getDriveL4(),
             g_score.getReleaseCommand(true));

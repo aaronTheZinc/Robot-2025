@@ -125,7 +125,7 @@ public Command getFollowPathCommand(String pathName, Rotation2d endRotation) {
            trajectoryPoses.stream()
                 .map(pose -> getAlignToWaypointCommand(
                   new Pose2d(pose.getX(), pose.getY(), endRotation)
-                  , () -> RobotContainer.pose_estimator.getEstimatedPose2D()))
+                  , () -> simulatedPose))
                 .toArray(Command[]::new)
         );
 
@@ -168,8 +168,8 @@ public Command getAlignToWaypointCommand(Pose2d targetPose, Supplier<Pose2d> pos
 
             // Apply motion with deadband
             simulatedPose = new Pose2d(
-                simulatedPose.getX() + (xCorrection + xFF) * dt,
-                simulatedPose.getY() + (yCorrection + yFF) * dt,
+                -(simulatedPose.getX() + (xCorrection + xFF) * dt),
+                -(simulatedPose.getY() + (yCorrection + yFF)) * dt,
                 Rotation2d.fromDegrees(simulatedPose.getRotation().getRadians() + thetaCorrection * dt)
             );
         },

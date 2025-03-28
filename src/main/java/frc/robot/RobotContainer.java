@@ -188,7 +188,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return a_auto.getScoreLevel4();
+    return a_auto.get2CoralAuto();
     // return Commands.none();
     // return a_auto.getScoreLevel4();
     // return Commands.sequence(
